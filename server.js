@@ -1,4 +1,4 @@
-const fastify = require('fastify')({ logger: true });
+const fastify = require('fastify')({ logger: false });
 const cors = require('@fastify/cors');
 const bcrypt = require('bcryptjs');
 const User = require('./models/users'); 
