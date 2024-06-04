@@ -366,8 +366,14 @@ fastify.get('/users/:username', async (req, reply) => {
       }
 });
 
-// Listen on port 3000
-fastify.listen({ port: 3000 }, (err, address) => {
-  if (err) throw err;
-    fastify.log.info(`server listening on ${address}`);
+// Listen on all network interfaces
+// fastify.listen({ port: 3000, host: '0.0.0.0' }, (err, address) => {
+//   if (err) throw err;
+//   fastify.log.info(`server listening on ${address}`);
+//   });
+
+const PORT = process.env.PORT || 3000; // Fallback to 3000 if PORT is not set
+fastify.listen({ port: PORT, host: '0.0.0.0' }, (err, address) => {
+if (err) throw err;
+fastify.log.info(`server listening on ${address}`);
 });
