@@ -34,35 +34,59 @@ fastify.register(require('@fastify/formbody'));
 
 // Create a transporter object with the SMTP configuration
 const transporter = nodemailer.createTransport({
-  host: 'smtp-mail.outlook.com',
-  port: 587,
-  secure: false,
-  auth: {
-    user: 'generic_service@hotmail.com',
-    pass: 'Hotmailtest'
-  },
-  tls: {
-    ciphers: 'SSLv3'
-  }
+      host: 'smtp-mail.outlook.com',
+      port: 587,
+      secure: false,
+      auth: {
+            user: 'generic_service@hotmail.com',
+            pass: 'Hotmailtest'
+      },
+      tls: {
+            ciphers: 'SSLv3'
+      }
 });
 
-// Route to send an email
+
+// const { newpassword } = require('./login');
+// // Route to send an email
+// fastify.post('/send-email', async (request, reply) => {
+//     const { to, subject, text } = request.body;
+//     try {
+//         // Send an email
+//         const info = await transporter.sendMail({
+//           from: 'generic_service@hotmail.com', // Sender address 
+//           to:  'laval_liu@hotmail.com', // List of recipients
+//           subject: "RESTAURANT ROYAL : Password Reset request", // Subject line
+//           text:  `Your password has been reset to ${newpassword}` // Plain text body
+//         });
+//         reply.type('application/json').code(200).send({ message: 'Email sent successfully with new Password', info });
+//     } catch (error) {
+//         console.error('Error sending email:', error);
+//         reply.type('application/json').code(500).send({ message: 'Error sending email', error: error.message });
+//     }
+// });
+
 fastify.post('/send-email', async (request, reply) => {
-    const { to, subject, text } = request.body;
-    try {
-        // Send an email
-        const info = await transporter.sendMail({
-          from: 'generic_service@hotmail.com', // Sender address 
-          to:  'laval_liu@hotmail.com', // List of recipients
-          subject: "RESTAURANT ROYAL : Password Reset request", // Subject line
-          text:  `Your password has been reset to ${password}` // Plain text body
-        });
-        reply.type('application/json').code(200).send({ message: 'Email sent successfully with new Password', info });
-    } catch (error) {
-        console.error('Error sending email:', error);
-        reply.type('application/json').code(500).send({ message: 'Error sending email', error: error.message });
-    }
-});
+  const { to, subject, text, newpassword } = request.body;
+  try {
+  // Hash the new password here before sending the email
+  const hashedPassword = await bcrypt.hash(newpassword, 10);
+  // Update the user's password in the database
+  await User.findByIdAndUpdate(userId, { password: hashedPassword });
+  
+  // Send an email with the new password
+  const info = await transporter.sendMail({
+  from: 'generic_service@hotmail.com', // Sender address
+  to: 'laval_liu@hotmail.com', // List of recipients
+  subject: "RESTAURANT ROYAL : Password Reset request", // Subject line
+  text: `Your password has been reset to ${newpassword}` // Plain text body
+  });
+  reply.type('application/json').code(200).send({ message: 'Email sent successfully with new Password', info });
+  } catch (error) {
+  console.error('Error sending email:', error);
+  reply.type('application/json').code(500).send({ message: 'Error sending email', error: error.message });
+  }
+  });
 
 // Unified route to create a single item or multiple items
 fastify.post('/items/create', async (request, reply) => {
