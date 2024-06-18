@@ -55,7 +55,7 @@ fastify.post('/send-email', async (request, reply) => {
           from: 'generic_service@hotmail.com', // Sender address 
           to:  'laval_liu@hotmail.com', // List of recipients
           subject: "RESTAURANT ROYAL : Password Reset request", // Subject line
-          text:  "Your password has been reset to " // Plain text body
+          text:  `Your password has been reset to ${password}` // Plain text body
         });
         reply.type('application/json').code(200).send({ message: 'Email sent successfully with new Password', info });
     } catch (error) {
