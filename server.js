@@ -47,17 +47,16 @@ const transporter = nodemailer.createTransport({
 });
 
 fastify.post('/send-email', async (request, reply) => {
-        const { to, subject, text, userId, username, newpassword } = request.body;
+        const { to, subject, text, userId, email, username, newpassword } = request.body;
         try {
               const hashedPassword = await bcrypt.hash(newpassword, 10);
-console.log("Backend:", newpassword);
               // Update the user's password in the database
               const user = await User.findOne({ username: username });
               await User.findByIdAndUpdate(user._id, { password: hashedPassword });
               // Send an email with the new password
               const info = await transporter.sendMail({
                     from: 'generic_service@hotmail.com', // Sender address
-                    to: 'laval_liu@hotmail.com', // List of recipients
+                    to: email, // List of recipients
                     subject: "RESTAURANT ROYAL : Password Reset request", // Subject line
                     text: `Your password has been reset to ${newpassword}` // Plain text body
               });
