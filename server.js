@@ -329,13 +329,14 @@ fastify.post('/users/login', async (req, reply) => {
 fastify.put('/users/updateProfile', async (req, reply) => {
       const { username, password, email, phoneno } = req.body;
       try {
+            const hashedPassword = await bcrypt.hash(password, 10);
             const user = await User.findOne({ username: username });
             if (!user) {
                 return reply.code(404).send({ message: 'User does not exist' });
             }
             const updatedUser = await User.findOneAndUpdate(
               { username: username },
-              { $set: { email: email, phoneno: phoneno } },
+              { $set: { email: email, password: hashedPassword, phoneno: phoneno } },
               { new: true }
             );
           return reply.code(200).send({ message: 'Profile updated successfully', user: updatedUser });
