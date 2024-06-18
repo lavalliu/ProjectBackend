@@ -67,25 +67,25 @@ const transporter = nodemailer.createTransport({
 // });
 
 fastify.post('/send-email', async (request, reply) => {
-  const { to, subject, text, newpassword } = request.body;
-  try {
-  // Hash the new password here before sending the email
-  const hashedPassword = await bcrypt.hash(newpassword, 10);
-  // Update the user's password in the database
-  await User.findByIdAndUpdate(userId, { password: hashedPassword });
-  
-  // Send an email with the new password
-  const info = await transporter.sendMail({
-  from: 'generic_service@hotmail.com', // Sender address
-  to: 'laval_liu@hotmail.com', // List of recipients
-  subject: "RESTAURANT ROYAL : Password Reset request", // Subject line
-  text: `Your password has been reset to ${newpassword}` // Plain text body
-  });
-  reply.type('application/json').code(200).send({ message: 'Email sent successfully with new Password', info });
-  } catch (error) {
-  console.error('Error sending email:', error);
-  reply.type('application/json').code(500).send({ message: 'Error sending email', error: error.message });
-  }
+        const { to, subject, text, userId, newpassword } = request.body;
+        try {
+              // Hash the new password here before sending the email
+              const hashedPassword = await bcrypt.hash(newpassword, 10);
+              // Update the user's password in the database
+              await User.findByIdAndUpdate(userId, { password: hashedPassword });
+              
+              // Send an email with the new password
+              const info = await transporter.sendMail({
+                    from: 'generic_service@hotmail.com', // Sender address
+                    to: 'laval_liu@hotmail.com', // List of recipients
+                    subject: "RESTAURANT ROYAL : Password Reset request", // Subject line
+                    text: `Your password has been reset to ${newpassword}` // Plain text body
+              });
+              reply.type('application/json').code(200).send({ message: 'Email sent successfully with new Password', info });
+        } catch (error) {
+              console.error('Error sending email:', error);
+              reply.type('application/json').code(500).send({ message: 'Error sending email', error: error.message });
+        }
   });
 
 // Unified route to create a single item or multiple items
