@@ -1,4 +1,4 @@
-const fastify = require('fastify')({ logger: false });
+const fastify = require('fastify')({ logger: true });
 const cors = require('@fastify/cors');
 const bcrypt = require('bcryptjs');
 const User = require('./models/users'); 
@@ -54,10 +54,10 @@ fastify.post('/send-email', async (request, reply) => {
         const info = await transporter.sendMail({
           from: 'generic_service@hotmail.com', // Sender address 
           to:  'laval_liu@hotmail.com', // List of recipients
-          subject: "Test email", // Subject line
-          text:  "test: " // Plain text body
+          subject: "RESTAURANT ROYAL : Password Reset request", // Subject line
+          text:  "Your password has been reset to " // Plain text body
         });
-        reply.type('application/json').code(200).send({ message: 'Email sent successfully', info });
+        reply.type('application/json').code(200).send({ message: 'Email sent successfully with new Password', info });
     } catch (error) {
         console.error('Error sending email:', error);
         reply.type('application/json').code(500).send({ message: 'Error sending email', error: error.message });
