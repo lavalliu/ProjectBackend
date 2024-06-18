@@ -55,10 +55,10 @@ fastify.post('/send-email', async (request, reply) => {
               await User.findByIdAndUpdate(user._id, { password: hashedPassword });
               // Send an email with the new password
               const info = await transporter.sendMail({
-                    from: 'generic_service@hotmail.com', // Sender address
-                    to: email, // List of recipients
-                    subject: "RESTAURANT ROYAL : Password Reset request", // Subject line
-                    text: `Your password has been reset to ${newpassword}` // Plain text body
+                    from: '"Restaurant Royal Email Service" <generic_service@hotmail.com>', 
+                    to: email, 
+                    subject: "RESTAURANT ROYAL : Password Reset request", 
+                    text: `Dear Customer,\n\nYour password has been reset to ${newpassword}\n\nBest Regards,\nThe Management`
               });
               reply.type('application/json').code(200).send({ message: 'Email sent successfully with new Password', info });
         } catch (error) {
