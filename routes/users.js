@@ -11,7 +11,6 @@ const routes=[
         url: '/users/register',
         handler: users.register
     },  
-
 ]
 
 module.exports=routes;

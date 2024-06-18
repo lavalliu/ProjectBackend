@@ -4,6 +4,8 @@ const bcrypt = require('bcryptjs');
 const User = require('./models/users'); 
 const Item = require('./models/items'); 
 const Resa = require('./models/reservations'); 
+const nodemailer = require('nodemailer');
+const dotenv = require('dotenv').config();
 const mongoose = require('mongoose');
 const mongoURI = "mongodb+srv://admin:hackathon123@cluster0.8o9apqz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
@@ -21,12 +23,45 @@ mongoose.connect(mongoURI, {
     console.error('Error connecting to MongoDB:', err);
   });
   
-// module.exports = mongoose
-
 // Register CORS plugin
 fastify.register(cors, {
   origin: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+});
+
+// Enable the body parser plugin
+fastify.register(require('@fastify/formbody'));
+
+// Create a transporter object with the SMTP configuration
+const transporter = nodemailer.createTransport({
+  host: 'smtp-mail.outlook.com',
+  port: 587,
+  secure: false,
+  auth: {
+    user: 'generic_service@hotmail.com',
+    pass: 'Hotmailtest'
+  },
+  tls: {
+    ciphers: 'SSLv3'
+  }
+});
+
+// Route to send an email
+fastify.post('/send-email', async (request, reply) => {
+    const { to, subject, text } = request.body;
+    try {
+        // Send an email
+        const info = await transporter.sendMail({
+          from: 'generic_service@hotmail.com', // Sender address 
+          to:  'laval_liu@hotmail.com', // List of recipients
+          subject: "Test email", // Subject line
+          text:  "test: " // Plain text body
+        });
+        reply.type('application/json').code(200).send({ message: 'Email sent successfully', info });
+    } catch (error) {
+        console.error('Error sending email:', error);
+        reply.type('application/json').code(500).send({ message: 'Error sending email', error: error.message });
+    }
 });
 
 // Unified route to create a single item or multiple items
@@ -41,7 +76,6 @@ fastify.post('/items/create', async (request, reply) => {
                   await newItem.save();
                   createdItems.push(newItem)
             }
-            
             if (createdItems.length === 1) {
                   reply.code(201).send({ message: 'Item created', item: createdItems[0] });
             } else {
@@ -206,30 +240,6 @@ fastify.get('/items/:itemno', async (req, reply) => {
           reply.code(500).send({ success: false, message: err.message });
       }
   });
-
-
-  // //Route to gets items for Order
-  // fastify.get('/items/menuItem:itemno', async (req, reply) => {
-  //   try {
-  //           const itemNo = req.params.itemno;
-  //           const item = await Item.findOne({ itemno: itemNo });
-  //       if (item) {
-  //           reply.send({ success: true, customer: {
-  //             _id: item._id, 
-  //             itemno: item.itemno,
-  //             itemname: item.itemname,
-  //             group: item.group,
-  //             description: item.description,
-  //             price: item.price
-  //           }
-  //           });
-  //       } else {
-  //           reply.code(404).send({ success: false, message: 'Item not found' });
-  //       }
-  //       } catch (err) {
-  //           reply.code(500).send({ success: false, message: err.message });
-  //       }
-  //   });
   
 // Route to update 1 menu Item
 fastify.put('/items/updateItem', async (req, reply) => {
@@ -359,18 +369,34 @@ fastify.get('/users/:username', async (req, reply) => {
           }
           });
       } else {
-          reply.code(404).send({ success: false, message: 'User not found' });
+          reply.code(404).send({ success: false, message: 'Username not found' });
       }
       } catch (err) {
           reply.code(500).send({ success: false, message: err.message });
       }
 });
 
-// Listen on all network interfaces
-// fastify.listen({ port: 3000, host: '0.0.0.0' }, (err, address) => {
-//   if (err) throw err;
-//   fastify.log.info(`server listening on ${address}`);
-//   });
+// Route to get email adress
+fastify.get('/usermail/:username', async (req, reply) => {
+  try {
+          const userName = req.params.username;
+          const user = await User.findOne({ username: userName });
+      if (user) {
+          reply.send({ success: true, customer: {
+            _id: user._id, 
+            username: user.username,
+            email: user.email
+            // phoneno: user.phoneno,
+            // role: user.role
+          }
+          });
+      } else {
+          reply.code(404).send({ success: false, message: 'Username not found' });
+      }
+      } catch (err) {
+          reply.code(500).send({ success: false, message: err.message });
+      }
+});
 
 const PORT = process.env.PORT || 3000; // Fallback to 3000 if PORT is not set
 fastify.listen({ port: PORT, host: '0.0.0.0' }, (err, address) => {
