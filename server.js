@@ -47,7 +47,7 @@ const transporter = nodemailer.createTransport({
 });
 
 fastify.post('/send-email', async (request, reply) => {
-        const { to, subject, text, userId, newpassword } = request.body;
+        const { to, subject, text, userId, username, newpassword } = request.body;
         try {
               const hashedPassword = await bcrypt.hash(newpassword, 10);
 console.log("Backend:", newpassword);
