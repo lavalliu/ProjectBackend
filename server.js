@@ -70,9 +70,7 @@ fastify.post('/items/create', async (request, reply) => {
       try {
             const createdItems = [];
             for (const itemData of items) {
-                  // Create a new item using the Mongoose model
                   const newItem = new Item(itemData);
-                  // Save the item to the database
                   await newItem.save();
                   createdItems.push(newItem)
             }
@@ -91,7 +89,6 @@ fastify.post('/items/create', async (request, reply) => {
 fastify.post('/users/register', async (req, reply) => {
       const { username, password, email, phoneno } = req.body;
       try {
-            // const hashedPassword = await bcrypt.hash(req.body.password, 10);
             const hashedPassword = await bcrypt.hash(password, 10);
             const user = new User({
                   username,
