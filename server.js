@@ -367,6 +367,8 @@ fastify.get('/users/:username', async (req, reply) => {
             _id: user._id, 
             username: user.username,
             email: user.email,
+            fname: user.fname,
+            lname: user.Arraylname,
             phoneno: user.phoneno,
             role: user.role
           }
