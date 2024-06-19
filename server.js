@@ -90,12 +90,14 @@ fastify.post('/items/create', async (request, reply) => {
 
 // Register route for user
 fastify.post('/users/register', async (req, reply) => {
-      const { username, password, email, phoneno } = req.body;
+      const { username, password, fname, lname, email, phoneno } = req.body;
       try {
             const hashedPassword = await bcrypt.hash(password, 10);
             const user = new User({
                   username,
                   password: hashedPassword,
+                  lname,
+                  fname,
                   email,
                   phoneno,
                   role: 'client'
@@ -327,7 +329,7 @@ fastify.post('/users/login', async (req, reply) => {
 
 // Route to update user
 fastify.put('/users/updateProfile', async (req, reply) => {
-      const { username, password, email, phoneno } = req.body;
+      const { username, password, fname, lname, email, phoneno } = req.body;
       try {
             const hashedPassword = await bcrypt.hash(password, 10);
             const user = await User.findOne({ username: username });
@@ -336,7 +338,7 @@ fastify.put('/users/updateProfile', async (req, reply) => {
             }
             const updatedUser = await User.findOneAndUpdate(
               { username: username },
-              { $set: { email: email, password: hashedPassword, phoneno: phoneno } },
+              { $set: { email: email, password: hashedPassword, fname: fname, lname: lname, phoneno: phoneno } },
               { new: true }
             );
           return reply.code(200).send({ message: 'Profile updated successfully', user: updatedUser });
