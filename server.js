@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const User = require('./models/users'); 
 const Item = require('./models/items'); 
 const Resa = require('./models/reservations'); 
+const Review = require('./models/reviews');
 const nodemailer = require('nodemailer');
 const dotenv = require('dotenv').config();
 const mongoose = require('mongoose');
@@ -308,7 +309,7 @@ fastify.get('/items/group/:groupName', async (request, reply) => {
   }
 });
 
-// Login Route
+// Route for user login
 fastify.post('/users/login', async (req, reply) => {
   const { username, password } = req.body;
   try {
@@ -381,7 +382,7 @@ fastify.get('/users/:username', async (req, reply) => {
       }
 });
 
-// Route to get email adress
+// Route to get email address
 fastify.get('/usermail/:username', async (req, reply) => {
   try {
           const userName = req.params.username;
@@ -391,8 +392,6 @@ fastify.get('/usermail/:username', async (req, reply) => {
             _id: user._id, 
             username: user.username,
             email: user.email
-            // phoneno: user.phoneno,
-            // role: user.role
           }
           });
       } else {
@@ -402,6 +401,29 @@ fastify.get('/usermail/:username', async (req, reply) => {
           reply.code(500).send({ success: false, message: err.message });
       }
 });
+
+// Route to add customer reviews
+fastify.post('/review/create', async (req, reply) => {
+  const { username, fname, date, rating, review, takeout } = req.body;
+  try {
+    const review = new Review({
+          username,
+          fname,
+          date,
+          rating,
+          review,
+          takeout
+    });
+    const newReview = await review.save();
+    reply.code(201).send({ message: 'Review created sucessfully', review: newReview });
+} catch (error) {
+    if (error.code === 11000) {
+          reply.code(400).send({ message: 'Your review for that date already exists' });
+    } else {
+          reply.code(500).send({ message: 'Error creating review', error: error.message });
+    }
+}
+});  
 
 const PORT = process.env.PORT || 3000; // Fallback to 3000 if PORT is not set
 fastify.listen({ port: PORT, host: '0.0.0.0' }, (err, address) => {
