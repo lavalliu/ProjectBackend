@@ -406,7 +406,7 @@ fastify.get('/usermail/:username', async (req, reply) => {
 fastify.post('/review/create', async (req, reply) => {
   const { username, fname, date, rating, review, takeout } = req.body;
   try {
-    const review = new Review({
+    const reviews = new Review({
           username,
           fname,
           date,
@@ -414,8 +414,8 @@ fastify.post('/review/create', async (req, reply) => {
           review,
           takeout
     });
-    const newReview = await review.save();
-    reply.code(201).send({ message: 'Review created sucessfully', review: newReview });
+    const newReview = await reviews.save();
+    reply.code(201).send({ message: 'Review created sucessfully', reviews: newReview });
 } catch (error) {
     if (error.code === 11000) {
           reply.code(400).send({ message: 'Your review for that date already exists' });
