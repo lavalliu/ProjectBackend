@@ -240,7 +240,7 @@ fastify.patch('/reservationstatus/:id', async (request, reply) => {
   const reservationId = request.params.id;
   const updateData = request.body;
   
-  const updatedReservation = await Reservation.findByIdAndUpdate(reservationId, updateData, { new: true });
+  const updatedReservation = await Resa.findByIdAndUpdate(reservationId, updateData, { new: true });
   
   if (!updatedReservation) {
   return reply.status(404).send({ message: 'Reservation not found' });
