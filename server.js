@@ -27,7 +27,7 @@ mongoose.connect(mongoURI, {
 // Register CORS plugin
 fastify.register(cors, {
   origin: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
 });
 
 // Enable the body parser plugin
@@ -223,16 +223,32 @@ fastify.put('/reservations/:reservationId', async (req, reply) => {
           if (!reservation) {
               return reply.code(404).send({ message: 'No reservations found for this Id' });
           }
-              const updatedReservation = await Resa.findOneAndUpdate(
-                    { _id: resId },
-                    { $set: { username, email, phoneno, takeout, other, date, time, pax, status, orders } },
-                    { new: true } 
-              );
+          const updatedReservation = await Resa.findOneAndUpdate(
+                { _id: resId },
+                { $set: { username, email, phoneno, takeout, other, date, time, pax, status, orders } },
+                { new: true } 
+          );
           return reply.code(200).send({ message: 'Reservation updated successfully', updatedReservation });
       } catch (error) {
           return reply.code(500).send({ message: 'Error updating Reservation', error: error.message });
       }
 });  
+
+// Route to update a reservation STATUS ONLY by ReservationId
+fastify.patch('/reservations/:id', async (req, res) => {
+      try {
+            const reservationId = req.params.id;
+            const updateData = req.body;
+            const updatedReservation = await Reservation.findByIdAndUpdate(reservationId, updateData, { new: true });
+            if (!updatedReservation) {
+                  return res.status(404).send({ message: 'Reservation not found' });
+            }
+            res.send(updatedReservation);
+            return reply.code(200).send({ message: 'Reservation updated successfully', updatedReservation });
+      } catch (error) {
+            res.status(500).send({ message: 'Error updating reservation', error });
+      }
+});
 
 // Route to get all Reservations
 fastify.get('/reservations', async (request, reply) => {
