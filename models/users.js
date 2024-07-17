@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
         required: true
     },
     "token": {
-        type: String,
+        type: String
     },
     "fname": {
         type: String,

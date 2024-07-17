@@ -3,27 +3,23 @@ const mongoose = require('mongoose');
 const reviewSchema = new mongoose.Schema({
     username: {
         type: String,
-        required: true,
-    },
-    fname: {
-        type: String,
-        required: true,
+        required: true
     },
     date: {
         type: Date,
-        required: true,
+        required: true
     },
     rating: {
         type: Number,
-        required: true,
+        required: true
     },
     review: {
         type: String,
-        required: true,
+        required: true
     },
     takeout: {
         type: Boolean,
-        required: true,
+        required: true
     },
 });  
 

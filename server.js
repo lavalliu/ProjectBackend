@@ -127,7 +127,7 @@ fastify.post('/table/create', async (req, reply) => {
 
 // Create Reservation route
 fastify.post('/reservation/create', async (req, reply) => {
-      const { username, email, fname, lname, date, time, pax, phoneno, other, takeout, orders } = req.body;
+      const { username, email, fname, lname, date, time, pax, phoneno, other, takeout, status, orders } = req.body;
       try {
             const resa = new Resa({
                   username,
@@ -140,6 +140,7 @@ fastify.post('/reservation/create', async (req, reply) => {
                   phoneno,
                   other,
                   takeout,
+                  status,
                   orders
             });
             const newResa = await resa.save();
@@ -169,6 +170,7 @@ fastify.get('/reservations/:username', async (req, reply) => {
             date: resa.date,
             time: resa.time,
             pax: resa.pax,
+            status : resa.status,
             takeout: resa.takeout,
             orders: resa.orders
           }
@@ -192,9 +194,9 @@ fastify.get('/reservations/user/:username', async (req, reply) => {
       }
 });
 
-// Route to update a reservation
+// Route to update a reservation by guestname
 fastify.put('/reservations/updateResa', async (req, reply) => {
-      const { guestname, date, time, pax, email, takeout, phoneno, other, orders } = req.body;
+      const { guestname, date, time, pax, email, takeout, phoneno, status, other, orders } = req.body;
       try {
               const reservation = await Resa.findOne({ guestname: guestname });
               if (!reservation) {
@@ -202,13 +204,34 @@ fastify.put('/reservations/updateResa', async (req, reply) => {
               }
                   const updatedReservation = await Resa.findOneAndUpdate(
                         { guestname: guestname },
-                        { $set: { email: email, takeout: takeout, other: other, date: date, time: time, pax: pax, orders: orders } },
+                        { $set: { email: email, phoneno: phoneno, takeout: takeout, other: other, date: date, time: time, pax: pax, status: status, orders: orders } },
                         { new: true } 
                   );
               return reply.code(200).send({ message: 'Reservation updated successfully', guestname: updatedReservation });
           } catch (error) {
               return reply.code(500).send({ message: 'Error updating Reservation', error: error.message });
           }
+});  
+
+
+// Route to update a reservation by ReservationId
+fastify.put('/reservations/:reservationId', async (req, reply) => {
+  const { username, date, time, pax, email, takeout, phoneno, status, other, orders } = req.body;
+  const resId = req.params.reservationId;
+  try {
+          const reservation = await Resa.findOne({ _id: resId });
+          if (!reservation) {
+              return reply.code(404).send({ message: 'No reservations found for this Id' });
+          }
+              const updatedReservation = await Resa.findOneAndUpdate(
+                    { _id: resId },
+                    { $set: { username, email, phoneno, takeout, other, date, time, pax, status, orders } },
+                    { new: true } 
+              );
+          return reply.code(200).send({ message: 'Reservation updated successfully', updatedReservation });
+      } catch (error) {
+          return reply.code(500).send({ message: 'Error updating Reservation', error: error.message });
+      }
 });  
 
 // Route to get all Reservations
@@ -244,7 +267,7 @@ fastify.get('/items/:itemno', async (req, reply) => {
       }
   });
   
-// Route to update 1 menu Item
+// Route to update 1 menu Item by item no
 fastify.put('/items/updateItem', async (req, reply) => {
   const { itemno, itemname, group, description, price } = req.body;
   try {
@@ -404,11 +427,10 @@ fastify.get('/usermail/:username', async (req, reply) => {
 
 // Route to add customer reviews
 fastify.post('/review/create', async (req, reply) => {
-  const { username, fname, date, rating, review, takeout } = req.body;
+  const { username, date, rating, review, takeout } = req.body;
   try {
     const reviews = new Review({
           username,
-          fname,
           date,
           rating,
           review,

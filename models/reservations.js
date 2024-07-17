@@ -19,19 +19,19 @@ const orderItemSchema = new mongoose.Schema({
 const resaSchema = new mongoose.Schema({
     username: {
         type: String,
-        required: true,
+        required: true
     },
     email: {
         type: String,
-        required: true,
+        required: true
     },
     fname: {
         type: String,
-        required: true,
+        required: true
     },
     lname: {
         type: String,
-        required: false,
+        required: false
     },
     date: {
         type: Date,
@@ -46,15 +46,19 @@ const resaSchema = new mongoose.Schema({
     },
     phoneno: {
         type: Number,
-        required: true,
+        required: true
     },
     other: {
         type: String,
-        required: false,
+        required: false
+    },
+    status: {
+        type: Boolean,
+        required: true
     },
     takeout: {
         type: Boolean,
-        required: true,
+        required: true
     },
     orders: [orderItemSchema] // Array of order items
 });  
