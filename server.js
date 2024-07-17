@@ -235,20 +235,23 @@ fastify.put('/reservations/:reservationId', async (req, reply) => {
 });  
 
 // Route to update a reservation STATUS ONLY by ReservationId
-fastify.patch('/reservations/:id', async (req, res) => {
-      try {
-            const reservationId = req.params.id;
-            const updateData = req.body;
-            const updatedReservation = await Reservation.findByIdAndUpdate(reservationId, updateData, { new: true });
-            if (!updatedReservation) {
-                  return res.status(404).send({ message: 'Reservation not found' });
-            }
-            res.send(updatedReservation);
-            return reply.code(200).send({ message: 'Reservation updated successfully', updatedReservation });
-      } catch (error) {
-            res.status(500).send({ message: 'Error updating reservation', error });
-      }
-});
+fastify.patch('/reservationstatus/:id', async (request, reply) => {
+  try {
+  const reservationId = request.params.id;
+  const updateData = request.body;
+  
+  const updatedReservation = await Reservation.findByIdAndUpdate(reservationId, updateData, { new: true });
+  
+  if (!updatedReservation) {
+  return reply.status(404).send({ message: 'Reservation not found' });
+  }
+  
+  reply.send(updatedReservation);
+  } catch (error) {
+  console.error('Error updating reservation:', error);
+  reply.status(500).send({ message: 'Error updating reservation', error });
+  }
+  });
 
 // Route to get all Reservations
 fastify.get('/reservations', async (request, reply) => {
