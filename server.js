@@ -6,7 +6,7 @@ const Item = require('./models/items');
 const Resa = require('./models/reservations'); 
 const Review = require('./models/reviews');
 const nodemailer = require('nodemailer');
-const dotenv = require('dotenv').config();
+require('dotenv').config();
 const mongoose = require('mongoose');
 const mongoURI = "mongodb+srv://admin:hackathon123@cluster0.8o9apqz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
