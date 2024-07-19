@@ -1,3 +1,4 @@
+require('dotenv').config();
 const fastify = require('fastify')({ logger: true });
 const cors = require('@fastify/cors');
 const bcrypt = require('bcryptjs');
@@ -6,10 +7,10 @@ const Item = require('./models/items');
 const Resa = require('./models/reservations'); 
 const Review = require('./models/reviews');
 const nodemailer = require('nodemailer');
-require('dotenv').config();
 const mongoose = require('mongoose');
 const mongoURI = "mongodb+srv://admin:hackathon123@cluster0.8o9apqz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
+console.log('process.env.BACKEND_URL');
 // Connect to MongoDB
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
